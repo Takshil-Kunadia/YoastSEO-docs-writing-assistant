@@ -28,6 +28,9 @@ module.exports = {
   },
   resolve: {
     extensions: ['.js'],
+    alias: {
+      process: "process/browser"
+    } 
   },
   optimization: {
     minimize: true,
@@ -73,6 +76,9 @@ module.exports = {
   plugins: [
     new ESLintPlugin(),
     new webpack.ProgressPlugin(),
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+    }),
     new CopyWebpackPlugin({
       patterns: [
         {
