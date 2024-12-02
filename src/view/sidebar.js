@@ -1,4 +1,4 @@
-import { Paper, ContentAssessor } from "yoastseo";
+import { Paper, ContentAssessor, SeoAssessor } from "yoastseo";
 import { default as AbstractResearcher } from "yoastseo/build/languageProcessing/AbstractResearcher";
 
 const yoastSeoAnalysisResult = () => {
@@ -15,15 +15,35 @@ const yoastSeoAnalysisResult = () => {
 	// Create a researcher
 	const researcher = new AbstractResearcher( paper );
 
-	// Create assessor and run assessments
-	const assessor = new ContentAssessor(researcher);
-	assessor.assess(paper);
-	const results = assessor.getValidResults();
+	// Create content assessor and run assessments
+	const contentAssessor = new ContentAssessor(researcher);
+	contentAssessor.assess(paper);
+	const contentAnalysisResults = contentAssessor.getValidResults();
 
-	return results;
+	// Create SEO assessor and run assessments
+	const seoAssessor = new SeoAssessor(researcher);
+	seoAssessor.assess(paper);
+	const seoAnalysisResults = seoAssessor.getValidResults();
+
+	return {
+		content: contentAnalysisResults,
+		seo: seoAnalysisResults,
+	};
 };
 
-const formattedResults = (results) => {
+const formatContentResults = (results) => {
+	const formattedResult = results.map((result) => {
+		return {
+			text: result.text,
+			score: result.score,
+		};
+	});
+
+	return JSON.stringify(formattedResult);
+};
+
+const formatSeoResults = (results) => {
+	Logger.log('formatSeoResults',results);
 	const formattedResult = results.map((result) => {
 		return {
 			text: result.text,
@@ -36,9 +56,13 @@ const formattedResults = (results) => {
 
 export const analysisResult = () => {
 	const results = yoastSeoAnalysisResult();
-	const analysisResult = formattedResults(results);
+	const contentAnalysisResult = formatContentResults(results.content);
+	const seoAnalysisResult = formatSeoResults(results.seo);
 
-	return analysisResult;
+	return {
+		content: contentAnalysisResult,
+		seo: seoAnalysisResult,
+	};
 };
 
 export const showSideAppScreen = () => {

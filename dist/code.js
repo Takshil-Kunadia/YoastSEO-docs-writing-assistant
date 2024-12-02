@@ -39,11 +39,7 @@ function updateSidebar() {}
         var n = r(4),
           i = r(89);
         const analysisResult = () => {
-            const e = ((e) => {
-              const t = e.map((e) => ({ text: e.text, score: e.score }));
-              return JSON.stringify(t);
-            })(
-              (() => {
+            const e = (() => {
                 const e = DocumentApp.getActiveDocument().getBody().getText(),
                   t = DocumentApp.getActiveDocument().getName(),
                   r = new n.Paper(e, {
@@ -53,10 +49,21 @@ function updateSidebar() {}
                   }),
                   s = new i.default(r),
                   a = new n.ContentAssessor(s);
-                return a.assess(r), a.getValidResults();
+                a.assess(r);
+                const o = a.getValidResults(),
+                  l = new n.SeoAssessor(s);
+                return l.assess(r), { content: o, seo: l.getValidResults() };
               })(),
-            );
-            return e;
+              t = ((e) => {
+                const t = e.map((e) => ({ text: e.text, score: e.score }));
+                return JSON.stringify(t);
+              })(e.content),
+              r = ((e) => {
+                Logger.log("formatSeoResults", e);
+                const t = e.map((e) => ({ text: e.text, score: e.score }));
+                return JSON.stringify(t);
+              })(e.seo);
+            return { content: t, seo: r };
           },
           showSideAppScreen = () => {
             const e = HtmlService.createTemplateFromFile("index")
