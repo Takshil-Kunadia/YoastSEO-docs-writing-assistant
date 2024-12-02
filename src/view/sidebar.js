@@ -4,12 +4,15 @@ import { default as AbstractResearcher } from "yoastseo/build/languageProcessing
 const yoastSeoAnalysisResult = () => {
 	const content = DocumentApp.getActiveDocument().getBody().getText();
 	const title = DocumentApp.getActiveDocument().getName();
+	
+	// Create a new paper
 	const paper = new Paper(content, {
 		title,
 		keyphrase: 'wordpress',
 		locale: 'en_US',
 	});
 
+	// Create a researcher
 	const researcher = new AbstractResearcher( paper );
 
 	// Create assessor and run assessments
@@ -20,14 +23,22 @@ const yoastSeoAnalysisResult = () => {
 	return results;
 };
 
-const addAnalysisResultToDocument = () => {
-	const result = yoastSeoAnalysisResult();
-	const document = DocumentApp.getActiveDocument();
-	const body = document.getBody();
+const formattedResults = (results) => {
+	const formattedResult = results.map((result) => {
+		return {
+			text: result.text,
+			score: result.score,
+		};
+	});
 
-	const analysisResult = JSON.stringify(result);
+	return JSON.stringify(formattedResult);
+};
 
-	body.appendParagraph(analysisResult);
+export const analysisResult = () => {
+	const results = yoastSeoAnalysisResult();
+	const analysisResult = formattedResults(results);
+
+	return analysisResult;
 };
 
 export const showSideAppScreen = () => {
@@ -35,6 +46,10 @@ export const showSideAppScreen = () => {
 	const template = HtmlService.createTemplateFromFile('index');
 	const htmlOutput = template.evaluate().setTitle('YoastSEO - Writing Assistant');
 	DocumentApp.getUi().showSidebar(htmlOutput);
+};
 
-	addAnalysisResultToDocument();
+export const updateSidebar = () => {
+	const template = HtmlService.createTemplateFromFile('index');
+	const htmlOutput = template.evaluate().setTitle('YoastSEO - Writing Assistant');
+	DocumentApp.getUi().showSidebar(htmlOutput);
 };

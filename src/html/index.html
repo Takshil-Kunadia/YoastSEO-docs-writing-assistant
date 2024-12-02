@@ -20,6 +20,39 @@
 					<h5 class="light">YoastSEO Writing Assistant</h5>
 				</div>
 			</div>
+			<div class="content">
+				<div class="collection">
+					<h3 class="light">Content Analysis</h3>
+					<? 
+						// Retrieve the analysis result data from Apps Script server-side
+						let results = JSON.parse(analysisResult());
+						let color = '';
+					?>
+					<? results.forEach((result) => { ?>
+						<? if ( result.score > 0 ) { ?>
+						<? if ( result.score < 3 ) {
+								color = 'red';
+							} else if ( result.score < 5 ) {
+								color = 'orange';
+							} else {
+								color = 'green';
+							}
+						?>
+						<div class="collection-item">
+							<span class="new badge <?= color ?>" data-badge-caption="Score : ">
+								<?= result.score ?>
+							</span>
+							<p class="light">
+								<?!= result.text ?>
+							</p>
+						</div>
+						<? } ?>
+					<? }); ?>
+				</div>
+				<div class="collection">
+					<h3 class="light">Keyphrase Analysis</h3>
+				</div>
+			</div>
 		</div>
 	</body>
 </html>

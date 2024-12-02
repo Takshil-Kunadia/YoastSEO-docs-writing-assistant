@@ -1,6 +1,8 @@
 function doGet() {}
 function onOpen() {}
 function showSideAppScreen() {}
+function analysisResult() {}
+function updateSidebar() {}
 (() => {
   var e = [
       ,
@@ -28,35 +30,45 @@ function showSideAppScreen() {}
       },
       (e, t, r) => {
         "use strict";
-        r.r(t), r.d(t, { showSideAppScreen: () => showSideAppScreen });
+        r.r(t),
+          r.d(t, {
+            analysisResult: () => analysisResult,
+            showSideAppScreen: () => showSideAppScreen,
+            updateSidebar: () => updateSidebar,
+          });
         var n = r(4),
           i = r(89);
-        const addAnalysisResultToDocument = () => {
-            const e = (() => {
-              const e = DocumentApp.getActiveDocument().getBody().getText(),
-                t = DocumentApp.getActiveDocument().getName(),
-                r = new n.Paper(e, {
-                  title: t,
-                  keyphrase: "wordpress",
-                  locale: "en_US",
-                }),
-                s = new i.default(r),
-                a = new n.ContentAssessor(s);
-              return a.assess(r), a.getValidResults();
-            })();
-            try {
-              const t = DocumentApp.getActiveDocument().getBody(),
-                r = JSON.stringify(e);
-              t.appendParagraph(r);
-            } catch (e) {
-              Logger.log(e);
-            }
+        const analysisResult = () => {
+            const e = ((e) => {
+              const t = e.map((e) => ({ text: e.text, score: e.score }));
+              return JSON.stringify(t);
+            })(
+              (() => {
+                const e = DocumentApp.getActiveDocument().getBody().getText(),
+                  t = DocumentApp.getActiveDocument().getName(),
+                  r = new n.Paper(e, {
+                    title: t,
+                    keyphrase: "wordpress",
+                    locale: "en_US",
+                  }),
+                  s = new i.default(r),
+                  a = new n.ContentAssessor(s);
+                return a.assess(r), a.getValidResults();
+              })(),
+            );
+            return e;
           },
           showSideAppScreen = () => {
             const e = HtmlService.createTemplateFromFile("index")
               .evaluate()
               .setTitle("YoastSEO - Writing Assistant");
-            DocumentApp.getUi().showSidebar(e), addAnalysisResultToDocument();
+            DocumentApp.getUi().showSidebar(e);
+          },
+          updateSidebar = () => {
+            const e = HtmlService.createTemplateFromFile("index")
+              .evaluate()
+              .setTitle("YoastSEO - Writing Assistant");
+            DocumentApp.getUi().showSidebar(e);
           };
       },
       (e, t, r) => {
@@ -42611,6 +42623,8 @@ function showSideAppScreen() {}
       n = __webpack_require__(3);
     (__webpack_require__.g.doGet = e.doGet),
       (__webpack_require__.g.onOpen = t.onOpen),
-      (__webpack_require__.g.showSideAppScreen = n.showSideAppScreen);
+      (__webpack_require__.g.showSideAppScreen = n.showSideAppScreen),
+      (__webpack_require__.g.analysisResult = n.analysisResult),
+      (__webpack_require__.g.updateSidebar = n.updateSidebar);
   })();
 })();
