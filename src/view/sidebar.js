@@ -1,5 +1,6 @@
 import { Paper, ContentAssessor, SeoAssessor } from "yoastseo";
-import { default as AbstractResearcher } from "yoastseo/build/languageProcessing/AbstractResearcher";
+import { default as Researcher } from "yoastseo/build/languageProcessing/languages/en/Researcher";
+import { default as getFleschReadingScore } from "yoastseo/build/languageProcessing/researches/getFleschReadingScore";
 
 const yoastSeoAnalysisResult = () => {
 	const content = DocumentApp.getActiveDocument().getBody().getText();
@@ -13,7 +14,7 @@ const yoastSeoAnalysisResult = () => {
 	});
 
 	// Create a researcher
-	const researcher = new AbstractResearcher( paper );
+	const researcher = new Researcher( paper );
 
 	// Create content assessor and run assessments
 	const contentAssessor = new ContentAssessor(researcher);
@@ -25,9 +26,18 @@ const yoastSeoAnalysisResult = () => {
 	seoAssessor.assess(paper);
 	const seoAnalysisResults = seoAssessor.getValidResults();
 
+	// Get Flesch Reading Score
+	const fleschReadingScore = getFleschReadingScore(paper, researcher);
+
 	return {
 		content: contentAnalysisResults,
 		seo: seoAnalysisResults,
+		others: [
+			{
+				text: ' Flesch Reading Score',
+				score: fleschReadingScore.score,
+			},
+		],
 	};
 };
 
@@ -43,7 +53,6 @@ const formatContentResults = (results) => {
 };
 
 const formatSeoResults = (results) => {
-	Logger.log('formatSeoResults',results);
 	const formattedResult = results.map((result) => {
 		return {
 			text: result.text,
@@ -58,10 +67,12 @@ export const analysisResult = () => {
 	const results = yoastSeoAnalysisResult();
 	const contentAnalysisResult = formatContentResults(results.content);
 	const seoAnalysisResult = formatSeoResults(results.seo);
+	const otherMetrics = formatContentResults(results.others);
 
 	return {
 		content: contentAnalysisResult,
 		seo: seoAnalysisResult,
+		others: otherMetrics,
 	};
 };
 

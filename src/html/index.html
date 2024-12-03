@@ -76,6 +76,24 @@
 						<? } ?>
 					<? }); ?>
 				</ul>
+
+				<h6 class="light">Other Metrics</h6>
+				<ul class="collection">
+					<?
+						// Retrieve the analysis result data from Apps Script server-side
+						let otherResults = JSON.parse(analysisResult().others);
+					?>
+					<? otherResults.forEach((result) => { ?>
+						<li class="collection-item">
+							<span class="new badge" data-badge-caption="Score : ">
+								<?= result.score ?>
+							</span>
+							<p class="light">
+								<?!= result.text ?>
+							</p>
+						</li>
+					<? }); ?>
+				</ul>
 			</div>
 		</div>
 	</body>
